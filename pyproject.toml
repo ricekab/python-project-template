@@ -1,0 +1,179 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "myprojectpkg"
+dynamic = ["version"]
+authors = [
+    { name = "Kevin Chi Yan Tang", email = "contact@kevinchiyantang.com" },
+]
+description = "project-description-goes-here"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Proprietary" } # Change to MIT, GPL-2.0, or other as appropriate
+keywords = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+
+# If providing a CLI
+# [project.scripts]
+# yourcommandhere = "path.to.package.cli:cli_main_function"
+
+# If applicable
+#[project.urls]
+# Documentation = "https://github.com/path/to/repository#readme", readthedocs, ...
+# Issues = "https://github.com/path/to/repository/issues"
+# Source = "https://github.com/path/to/repository"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["python/myprojectpkg"]
+# If you need to include additional data files
+# include = [
+#     "python/**/*.j2",    # Jinja templates
+#     "python/**/*.html",  # HTML templates
+#     "python/**/*.json",  # JSON data files
+#     "python/**/*.yml",   # YAML files
+# ]
+
+# === HATCH ENVIRONMENTS ===
+
+[tool.hatch.envs.test]
+dependencies = ["pytest", "coverage[toml]"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest tests/"
+cov-run = "coverage run -m pytest tests/"
+cov-report = ["coverage combine", "coverage report"]
+clean = "coverage erase"
+cov = ["cov-run", "cov-report", "clean"]
+cov-html = ["coverage combine", "coverage html"]
+
+[tool.hatch.envs.lint]
+dependencies = ["ruff"]
+
+[tool.hatch.envs.lint.scripts]
+format-check = "ruff format --check python/ tests/"
+lint = "ruff check python/ tests/"
+check = ["format-check", "lint"]
+format = "ruff format python/ tests/"
+fix = "ruff check --fix python/ tests/"
+fix-all = ["fix", "format"]
+
+[tool.hatch.envs.type]
+dependencies = ["mypy"]
+
+[tool.hatch.envs.type.scripts]
+check = "mypy --install-types --non-interactive {args:python/myprojectpkg tests}"
+
+# === TOOL CONFIGURATIONS ===
+# pytest config
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+# python_files = "test_*.py"
+# python_classes = "Test*"
+# python_functions = "test_*"
+addopts = [
+    "-ra",              # Show extra test summary info
+    "-q",               # Quiet mode
+    "--strict-markers",
+]
+# Uncomment to enable markers:
+# markers = [
+#     "slow: marks tests as slow",
+#     "unit: unit tests",
+# ]
+
+# coverage config
+[tool.coverage.run]
+source = ["python/myprojectpkg"]
+omit = ["*/tests/*", "*/test_*"]
+branch = true
+parallel = true
+
+# [tool.coverage.paths]
+# source = [
+#     "python/myprojectpkg",
+#     "*/myprojectpkg/python/myprojectpkg", # Catches paths inside the Hatch virtualenv
+# ]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    ]
+precision = 2
+show_missing = true
+skip_covered = false  # set to true for large codebases (cluttered output)
+skip_empty = true     # Don't show __init__.py (and other empty) files.
+# Optional: Coverage failure under x%
+fail_under = 60
+
+# mypy config
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+# Uncomment for stricter checks:
+# strict = true
+# disallow_subclassing_any = true
+
+# ruff config
+[tool.ruff]
+line-length = 88
+exclude = [".git", "__pycache__", "build", "dist"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "C4",  # flake8-comprehensions - list/dict comprehensions
+    "B",   # flake8-bugbear - design bug linting
+    "S",   # flake8-bandit - security linting
+    "UP",  # pyupgrade
+    "A",   # flake8-builtins - builtins shadowing check
+    # Add additional rules as desired.
+    "N",   # pep8-naming if you want to enforce it
+    "RUF", # ruff-specific rules, extra sanity checks
+    "PT",  # flake8-pytest-style - standard pytest style
+    # see: https://docs.astral.sh/ruff/rules/
+]
+ignore = [
+    "E501",  # line too long (formatter does this)
+    "ARG001" # allow unused arguments for tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"] # Allow assert in tests
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
