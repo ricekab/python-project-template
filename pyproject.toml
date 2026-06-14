@@ -32,10 +32,14 @@ dependencies = []
 # yourcommandhere = "path.to.package.cli:cli_main_function"
 
 # If applicable
-#[project.urls]
+# [project.urls]
 # Documentation = "https://github.com/path/to/repository#readme", readthedocs, ...
 # Issues = "https://github.com/path/to/repository/issues"
 # Source = "https://github.com/path/to/repository"
+
+# If you need optional dependency groups
+#[project.optional-dependencies]
+#cryptography = ["cryptography"]
 
 [tool.hatch.version]
 source = "vcs"
